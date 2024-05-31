@@ -49,19 +49,23 @@ exports.addMessage = (data) => {
         if (data.messages[i].role == "user")
             speaker = "FALSE";
         if (i == data.messages.length - 1)
-            values += "('" + data.id + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+            values += "('"+ data.id + "', '" + data.id + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
         else
-            values += "('" + data.id + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+            values += "('" + data.id + "', '" + data.id + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
     }
-    let query = 'INSERT INTO messages(chat_id, from_me, content, timestamp) VALUES ' + values;
+    let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values;
     console.log(query);
     return new Promise((resolve, reject) => {
-        pool.query(query).then(response => {
-            console.log("Successfully added a message " + data.id);
-            resolve(true);
-        }).catch(err => {
-            console.log("error while addMessage ", err);
-            reject(err);
-        })
+	try {
+	        pool.query(query).then(response => {
+        	    console.log("Successfully added a message " + data.id);
+	            resolve(true);
+	        }).catch(err => {
+	            console.log("error while addMessage ", err);
+	            reject(err);
+        	})
+	} catch(e) {
+		reject(e);
+	}
     });
 }
