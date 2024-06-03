@@ -175,3 +175,7 @@ div#controls div#call_log p {
   text-indent: -1.25em;
   width: 90%;
 }
+
+div #button-history {
+  margin: auto;
+}

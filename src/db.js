@@ -31,11 +31,13 @@ const pool = new Pool({
 });
 
 //save call log
-exports.addMessage = (data) => {
-    data = JSON.parse(data);
+exports.addMessage = (data, user_phone) => {
+    // data = JSON.parse(data);
+    if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) user_phone = data.call.customer.number.slice(1);
     let values = "";
+    console.log(user_phone);
     for (var i = 1; i < data.messages.length; i++) {
-        const date = new Date();
+        const date = new Date(data.messages[i].time);
 
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -45,27 +47,49 @@ exports.addMessage = (data) => {
         const seconds = String(date.getSeconds()).padStart(2, '0');
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        let speaker = "TRUE";
+        // let speaker = "bot";
+        // if (data.messages[i].role == "user")
+        //     speaker = "user";
+        // if (i == data.messages.length - 1)
+        //     values += "('" + user_phone + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+        // else
+        //     values += "('" + user_phone + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+        let from_me = "TRUE";
         if (data.messages[i].role == "user")
-            speaker = "FALSE";
+            from_me = "FALSE";
         if (i == data.messages.length - 1)
-            values += "('"+ data.id + "', '" + data.id + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+            values += "('" + data.call.id + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
         else
-            values += "('" + data.id + "', '" + data.id + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+            values += "('" + data.call.id + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
     }
     let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values;
-    console.log(query);
     return new Promise((resolve, reject) => {
-	try {
-	        pool.query(query).then(response => {
-        	    console.log("Successfully added a message " + data.id);
-	            resolve(true);
-	        }).catch(err => {
-	            console.log("error while addMessage ", err);
-	            reject(err);
-        	})
-	} catch(e) {
-		reject(e);
-	}
+        try {
+            pool.query(query).then(response => {
+                console.log("Successfully added a message " + data.call.id);
+                resolve(true);
+            }).catch(err => {
+                console.log("error while addMessage ", err);
+                reject(err);
+            })
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
+exports.viewHistory = (phone) => {
+    let query = "SELECT * FROM messages WHERE chat_id = '" + phone + "' ORDER BY timestamp DESC LIMIT 10";
+    return new Promise((resolve, reject) => {
+        try {
+            pool.query(query).then(response => {
+                resolve(response.rows);
+            }).catch(err => {
+                console.log("error while addMessage ", err);
+                reject(err);
+            })
+        } catch (e) {
+            reject(e);
+        }
     });
 }

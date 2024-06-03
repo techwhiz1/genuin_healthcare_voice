@@ -10,38 +10,35 @@
   // get call logs using vapi call api
   const get_logs = () => {
     setTimeout(() => {
-      var log_message = "";
 
       $.ajax({
-        url: 'https://api.vapi.ai/call?limit=1', // Replace with your URL
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer 709e9a14-b1de-459f-ae4b-f0f7727b7c27'
+        url: 'view_history',
+        method: 'POST',
+        data: { number: document.getElementById("user-phone-number").value },
+        success: (data) => {
+          document.getElementById("call_log").value = "";
+          for (var i = data.length - 1; i > -1; i--)
+            call_log(data[i]);
         },
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader('Authorization', 'Bearer 709e9a14-b1de-459f-ae4b-f0f7727b7c27');
-        },
-        success: function (data) {
-          $.post({
-            url: 'save_call_log',
-            contentType: 'application/json',
-            data: JSON.stringify(data[0]),
-            success: (result) => {
-              console.log(result, "-=-=-=-=-=");
-            },
-            error: (err) => {
-              console.log('Error: ', err);
-            }
-          })
-          for (var i = 1; i < data[0].messages.length; i++) {
-            call_log(data[0].messages[i])
-            log_message += data[0].messages[i].message;
-          }
-        },
-        error: function (error) {
-          console.log('Error:', error);
+        error: (err) => {
+          console.log("Error: ", err);
         }
-      });
+      })
+
+      // $.ajax({
+      //   url: 'https://api.vapi.ai/call?limit=1', // Replace with your URL
+      //   method: 'GET',
+      //   headers: {
+      //     'Authorization': 'Bearer 709e9a14-b1de-459f-ae4b-f0f7727b7c27'
+      //   },
+      //   success: function (data) {
+      //     for (var i = 1; i < data[0].messages.length; i++)
+      //       call_log(data[0].messages[i])
+      //   },
+      //   error: function (error) {
+      //     console.log('Error:', error);
+      //   }
+      // });
     }, 5000)
   }
 
@@ -124,6 +121,20 @@
   // Bind button to make call
   document.getElementById("button-call").onclick = function () {
     // get the phone number to connect the call to
+    if (document.getElementById("user-phone-number").value == "") {
+      return alert("Please enter your phone number before call");
+    }
+    $.ajax({
+      url: 'send_phone_number', // Replace with your URL
+      method: 'POST',
+      data: { number: document.getElementById("user-phone-number").value },
+      success: function (data) {
+        console.log("Phone number sent!");
+      },
+      error: function (error) {
+        console.log('Error:', error);
+      }
+    });
     var params = {
       To: document.getElementById("phone-number").value
     };
@@ -144,6 +155,23 @@
     if (device) {
       device.disconnectAll();
     }
+  };
+
+  // Bind button to view history
+  document.getElementById("button-history").onclick = function () {
+    $.ajax({
+      url: 'view_history',
+      method: 'POST',
+      data: { number: document.getElementById("user-phone-number").value },
+      success: (data) => {
+        document.getElementById("call_log").value = "";
+        for (var i = data.length - 1; i > -1; i--)
+          call_log(data[i]);
+      },
+      error: (err) => {
+        console.log("Error: ", err);
+      }
+    })
   };
 
   document.getElementById("get-devices").onclick = function () {
@@ -239,7 +267,7 @@
   // Activity log
   function call_log(message) {
     var logDiv = document.getElementById("call_log");
-    logDiv.innerHTML += "<p>&gt;&nbsp;" + message.role + ": " + message.message + "</p>";
+    logDiv.innerHTML += "<p>&gt;&nbsp;" + message.speaker + ": " + message.content + "</p>";
     logDiv.scrollTop = logDiv.scrollHeight;
   }
 

@@ -19,8 +19,10 @@
       </div>
     </div>
     <div id="call-controls">
+      <p class="instructions">Enter your number:</p>
+      <input id="user-phone-number" type="text" placeholder="ex: 15126452275" />
       <p class="instructions">Make a Call:</p>
-      <input id="phone-number" type="text" placeholder="Enter a phone # or client name" value="512-645-2275" />
+      <input id="phone-number" type="text" placeholder="Enter a phone # or client name" value="512-645-2275" disabled />
       <button id="button-call">Call</button>
       <button id="button-hangup">Hangup</button>
       <div id="volume-indicators">
@@ -31,6 +33,9 @@
       </div>
     </div>
     <div id="log"></div>
+    <div style="width: 100%; display: flex;">
+      <button id="button-history">View History</button>
+    </div>
     <div style="width: 100%; display: flex;">
       <div id="call_log"></div>
     </div>
