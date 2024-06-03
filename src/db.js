@@ -32,7 +32,6 @@ const pool = new Pool({
 
 //save call log
 exports.addMessage = (data, user_phone) => {
-    // data = JSON.parse(data);
     if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) user_phone = data.call.customer.number.slice(1);
     let values = "";
     console.log(user_phone);

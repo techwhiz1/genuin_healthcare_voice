@@ -25,7 +25,7 @@ router.post('/v2/send_phone_number', (req, res) => {
   res.send(true);
 })
 
-router.post('/api/webhook', (req, res) => {
+router.post('/v2/api/webhook', (req, res) => {
   try {
     const reqBody = JSON.stringify(req.body);
     const payload = req.body.message;

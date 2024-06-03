@@ -10,35 +10,7 @@
   // get call logs using vapi call api
   const get_logs = () => {
     setTimeout(() => {
-
-      $.ajax({
-        url: 'view_history',
-        method: 'POST',
-        data: { number: document.getElementById("user-phone-number").value },
-        success: (data) => {
-          document.getElementById("call_log").value = "";
-          for (var i = data.length - 1; i > -1; i--)
-            call_log(data[i]);
-        },
-        error: (err) => {
-          console.log("Error: ", err);
-        }
-      })
-
-      // $.ajax({
-      //   url: 'https://api.vapi.ai/call?limit=1', // Replace with your URL
-      //   method: 'GET',
-      //   headers: {
-      //     'Authorization': 'Bearer 709e9a14-b1de-459f-ae4b-f0f7727b7c27'
-      //   },
-      //   success: function (data) {
-      //     for (var i = 1; i < data[0].messages.length; i++)
-      //       call_log(data[0].messages[i])
-      //   },
-      //   error: function (error) {
-      //     console.log('Error:', error);
-      //   }
-      // });
+      history_api()
     }, 5000)
   }
 
@@ -159,19 +131,7 @@
 
   // Bind button to view history
   document.getElementById("button-history").onclick = function () {
-    $.ajax({
-      url: 'view_history',
-      method: 'POST',
-      data: { number: document.getElementById("user-phone-number").value },
-      success: (data) => {
-        document.getElementById("call_log").value = "";
-        for (var i = data.length - 1; i > -1; i--)
-          call_log(data[i]);
-      },
-      error: (err) => {
-        console.log("Error: ", err);
-      }
-    })
+    history_api();
   };
 
   document.getElementById("get-devices").onclick = function () {
@@ -274,5 +234,21 @@
   // Set the client name in the UI
   function setClientNameUI(clientName) {
     var div = document.getElementById("client-name");
+  }
+
+  function history_api() {
+    $.ajax({
+      url: 'view_history',
+      method: 'POST',
+      data: { number: document.getElementById("user-phone-number").value },
+      success: (data) => {
+        document.getElementById("call_log").innerHTML = null;
+        for (var i = data.length - 1; i > -1; i--)
+          call_log(data[i]);
+      },
+      error: (err) => {
+        console.log("Error: ", err);
+      }
+    })
   }
 });
