@@ -31,6 +31,7 @@ const pool = new Pool({
 });
 
 //save call log
+
 exports.addMessage = (data, user_phone) => {
     if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) user_phone = data.call.customer.number.slice(1);
     let values = "";
@@ -57,9 +58,9 @@ exports.addMessage = (data, user_phone) => {
         if (data.messages[i].role == "user")
             from_me = "FALSE";
         if (i == data.messages.length - 1)
-            values += "('" + data.call.id + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+            values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
         else
-            values += "('" + data.call.id + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+            values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
     }
     let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values;
     return new Promise((resolve, reject) => {
@@ -71,7 +72,7 @@ exports.addMessage = (data, user_phone) => {
                 console.log("error while addMessage ", err);
                 reject(err);
             })
-        } catch (e) {
+        } catch (e){
             reject(e);
         }
     });

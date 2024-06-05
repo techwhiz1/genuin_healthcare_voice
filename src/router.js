@@ -30,7 +30,11 @@ router.post('/v2/api/webhook', (req, res) => {
     const reqBody = JSON.stringify(req.body);
     const payload = req.body.message;
     if (payload.type == "end-of-call-report")
-      res.send(addMessage(payload, user_phone));
+      addMessage(payload, user_phone).then(result => {
+         res.send(result); 
+      }).catch(err => {
+         res.status(500).send(err);
+      });
   } catch (error) {
     return error.message;
   }
