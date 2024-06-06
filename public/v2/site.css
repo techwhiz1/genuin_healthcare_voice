@@ -103,6 +103,19 @@ div#controls button {
   outline: 0;
 }
 
+div#controls #link-whatsapp {
+  margin-top: 1.75em;
+  border-radius: 1em;
+  font-family: "Helvetica Light", Helvetica, sans-serif;
+  font-size: .8em;
+  font-weight: lighter;
+  color: black;
+  outline: 0;
+  background: white;
+  padding: 7px 15px;
+  text-decoration: none;
+}
+
 div#controls button:active {
   position: relative;
   top: 1px;
@@ -176,6 +189,6 @@ div#controls div#call_log p {
   width: 90%;
 }
 
-div #button-history {
+div #button-group {
   margin: auto;
 }
