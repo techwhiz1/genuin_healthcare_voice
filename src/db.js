@@ -33,6 +33,7 @@ const pool = new Pool({
 //save call log
 
 exports.addMessage = (data, user_phone) => {
+    console.log("enter_addMessage");
     if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) user_phone = data.call.customer.number.slice(1);
     let values = "";
     console.log(user_phone);
@@ -62,7 +63,8 @@ exports.addMessage = (data, user_phone) => {
         else
             values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
     }
-    let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values;
+    let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values
+    console.log(query);
     return new Promise((resolve, reject) => {
         try {
             pool.query(query).then(response => {
