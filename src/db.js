@@ -37,31 +37,35 @@ exports.addMessage = (data, user_phone) => {
     if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) user_phone = data.call.customer.number.slice(1);
     let values = "";
     console.log(user_phone);
-    for (var i = 1; i < data.messages.length; i++) {
-        const date = new Date(data.messages[i].time);
+    try {
+        for (var i = 1; i < data.messages.length; i++) {
+            const date = new Date(data.messages[i].time);
 
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
 
-        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        // let speaker = "bot";
-        // if (data.messages[i].role == "user")
-        //     speaker = "user";
-        // if (i == data.messages.length - 1)
-        //     values += "('" + user_phone + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
-        // else
-        //     values += "('" + user_phone + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
-        let from_me = "TRUE";
-        if (data.messages[i].role == "user")
-            from_me = "FALSE";
-        if (i == data.messages.length - 1)
-            values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
-        else
-            values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+            const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+            // let speaker = "bot";
+            // if (data.messages[i].role == "user")
+            //     speaker = "user";
+            // if (i == data.messages.length - 1)
+            //     values += "('" + user_phone + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+            // else
+            //     values += "('" + user_phone + "', '" + speaker + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+            let from_me = "TRUE";
+            if (data.messages[i].role == "user")
+                from_me = "FALSE";
+            if (i == data.messages.length - 1)
+                values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+            else
+                values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+        }
+    } catch (e) {
+        console.log(e);
     }
     let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values
     console.log(query);
@@ -74,7 +78,7 @@ exports.addMessage = (data, user_phone) => {
                 console.log("error while addMessage ", err);
                 reject(err);
             })
-        } catch (e){
+        } catch (e) {
             reject(e);
         }
     });
