@@ -60,9 +60,9 @@ exports.addMessage = (data, user_phone) => {
             if (data.messages[i].role == "user")
                 from_me = "FALSE";
             if (i == data.messages.length - 1)
-                values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "')";
+                values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + (data.messages[i].message ? data.messages[i].message.replace(/'/g, "''") : "''") + "', '" + formattedDate + "')";
             else
-                values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + data.messages[i].message.replace(/'/g, "''") + "', '" + formattedDate + "'), ";
+                values += "('" + data.call.id + i + "', '" + user_phone + "', '" + from_me + "', '" + (data.messages[i].message ? data.messages[i].message.replace(/'/g, "''") : "''") + "', '" + formattedDate + "'), ";
         }
     } catch (e) {
         console.log(e);
