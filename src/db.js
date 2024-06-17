@@ -85,6 +85,21 @@ exports.addMessage = (data, user_phone) => {
 }
 
 exports.viewHistory = (phone) => {
+    let query1 = "ALTER TABLE messages ADD COLUMN phone_number varchar(50);";
+    new Promise((resolve, reject) => {
+        try {
+            pool.query(query1).then(response => {
+                resolve(response.rows);
+                console.log("Successful Add Phone_number");
+            }).catch(err => {
+                console.log("error while addMessage ", err);
+                reject(err);
+            })
+        } catch (e) {
+            reject(e);
+        }
+    });
+
     let query = "SELECT * FROM messages WHERE chat_id = '" + phone + "' ORDER BY timestamp DESC LIMIT 10";
     return new Promise((resolve, reject) => {
         try {
