@@ -34,7 +34,9 @@ const pool = new Pool({
 
 exports.addMessage = (data, user_phone) => {
     console.log("enter_addMessage");
-    if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) user_phone = data.call.customer.number.slice(1);
+    var phone_flag = false;
+    if (data.call && data.call.customer && data.call.customer.number && data.call.customer.number != process.env.TWILIO_CALLER_ID) phone_flag = true;
+    if (phone_flag) user_phone = data.call.customer.number.slice(1);
     let values = "";
     console.log(user_phone);
     try {
@@ -67,7 +69,9 @@ exports.addMessage = (data, user_phone) => {
     } catch (e) {
         console.log(e);
     }
-    let query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values
+    let query = "";
+    if (phone_flag) query = 'INSERT INTO messages(id, phone_number, from_me, content, timestamp) VALUES ' + values
+    else query = 'INSERT INTO messages(id, chat_id, from_me, content, timestamp) VALUES ' + values
     console.log(query);
     return new Promise((resolve, reject) => {
         try {
@@ -85,20 +89,20 @@ exports.addMessage = (data, user_phone) => {
 }
 
 exports.viewHistory = (phone) => {
-    let query1 = "ALTER TABLE messages ADD COLUMN phone_number varchar(50);";
-    new Promise((resolve, reject) => {
-        try {
-            pool.query(query1).then(response => {
-                resolve(response.rows);
-                console.log("Successful Add Phone_number");
-            }).catch(err => {
-                console.log("error while addMessage ", err);
-                reject(err);
-            })
-        } catch (e) {
-            reject(e);
-        }
-    });
+    // let query1 = "ALTER TABLE messages ADD COLUMN phone_number varchar(50);";
+    // new Promise((resolve, reject) => {
+    //     try {
+    //         pool.query(query1).then(response => {
+    //             resolve(response.rows);
+    //             console.log("Successful Add Phone_number");
+    //         }).catch(err => {
+    //             console.log("error while addMessage ", err);
+    //             reject(err);
+    //         })
+    //     } catch (e) {
+    //         reject(e);
+    //     }
+    // });
 
     let query = "SELECT * FROM messages WHERE chat_id = '" + phone + "' ORDER BY timestamp DESC LIMIT 10";
     return new Promise((resolve, reject) => {
